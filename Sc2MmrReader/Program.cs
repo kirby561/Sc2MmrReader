@@ -43,18 +43,27 @@ namespace Sc2MmrReader {
 
             private void RefreshMmrAsync() {
                 Task<string> responseTask = _httpClient.GetStringAsync("https://us.api.blizzard.com/sc2/profile/1/1/1986271/ladder/274006?locale=en_US&access_token=USm8OakZJuNw3uXwu75AR1DKGHzhxgtCjq");
-                responseTask.Wait();
 
-                // The Blizzard API returns a JSON string that contains ladder information about
-                //    the above profile.
-                string jsonResponse = responseTask.Result;
+                bool succeeded = true;
+                try {
+                    responseTask.Wait();
+                } catch (Exception ex) {
+                    succeeded = false;
+                    Console.WriteLine("An exception was thrown polling the endpoint: " + ex.Message);
+                }
 
-                // We expect the response to have a "rankedAndPools.mmr" property with our MMR.
-                dynamic ladderData = _jsonSerializer.Deserialize<dynamic>(jsonResponse);
-                long mmr = (long)Math.Round((double)ladderData["ranksAndPools"][0]["mmr"]);
+                if (succeeded) {
+                    // The Blizzard API returns a JSON string that contains ladder information about
+                    //    the above profile.
+                    string jsonResponse = responseTask.Result;
 
-                // Dump it to a file
-                File.WriteAllText(_filePath, mmr.ToString());
+                    // We expect the response to have a "rankedAndPools.mmr" property with our MMR.
+                    dynamic ladderData = _jsonSerializer.Deserialize<dynamic>(jsonResponse);
+                    long mmr = (long)Math.Round((double)ladderData["ranksAndPools"][0]["mmr"]);
+
+                    // Dump it to a file
+                    File.WriteAllText(_filePath, mmr.ToString());
+                }
             }
 
             private void ReadMmrLoop() {
