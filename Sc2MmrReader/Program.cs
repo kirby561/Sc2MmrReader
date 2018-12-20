@@ -10,11 +10,11 @@ using System.Web.Script.Serialization;
 
 namespace Sc2MmrReader {
     class Program {
-        public struct ReaderConfig {
+        public class ReaderConfig {
             // Config settings:
             public long MsPerRead { get; set; }            // How many milliseconds inbetween reads
             public String DataDirectory { get; set; }      // Where to store cached files
-            public String MmrFileDirectory { get; set; }   // Where to output the MMR to
+            public String MmrFilePath { get; set; }        // Where to output the MMR to
 
             // Information about the account to get the MMR for:
             public String RegionId { get; set; }       // Can be "US", "EU", "KO" or "CN"
@@ -118,7 +118,7 @@ namespace Sc2MmrReader {
                     long mmr = (long)Math.Round((double)ladderData["ranksAndPools"][0]["mmr"]);
 
                     // Dump it to a file
-                    File.WriteAllText(_configuration.MmrFileDirectory, mmr.ToString());
+                    File.WriteAllText(_configuration.MmrFilePath, mmr.ToString());
                 }
             }
 
@@ -273,38 +273,58 @@ namespace Sc2MmrReader {
             }
         }
 
-        static void Main(string[] args) {
-            long msPerRead = 5000;
+        private static ReaderConfig ReadConfigFile(String path) {
+            String configFileText = null;
+            try {
+                configFileText = File.ReadAllText(path);
+            } catch (IOException ex) {
+                Console.WriteLine("Unable to open the config file at " + path);
+                Console.WriteLine("Does the file exist?");
+                Console.WriteLine("Exception: " + ex.Message);
+                return null;
+            }
+
+            JavaScriptSerializer deserializer = new JavaScriptSerializer();
+            ReaderConfig configFile = null;
+
+            try {
+                configFile = deserializer.Deserialize<ReaderConfig>(configFileText);
+            } catch (Exception ex) {
+                Console.WriteLine("Could not deserialize the config file.  Is the format correct?  See Config.json.example for correct usage.");
+                Console.WriteLine("Exception: " + ex.Message);
+                if (ex.InnerException != null) {
+                    Console.WriteLine("Inner Exception: " + ex.InnerException.Message);
+                }
+            }
+
+            return configFile;
+        }
+
+        public static void Main(string[] args) {
             String exePath = System.Reflection.Assembly.GetEntryAssembly().Location;
             String exeParent = System.IO.Directory.GetParent(exePath).FullName;
-            String filePath = Path.Combine(new string[] { exeParent, "mmr.txt" });
+            String configFilePath = Path.Combine(new string[] { exeParent, "Config.json" });
             
             if (args.Length > 1) {
-                // Get the msPerRead
-                if (!long.TryParse(args[1], out msPerRead)) {
-                    Console.WriteLine("Enter a 64 bit integer for the milliseconds per read.");
-                    Console.WriteLine("Format:\nSc2MmrReader <MsPerRead> <FilePath>");
-                    Environment.Exit(-1);
-                }
+                configFilePath = args[1];
             } else {
-                Console.WriteLine("No milliseconds per read specified.  Using the default value of " + msPerRead);
+                Console.WriteLine("No config file specified.  Using default path: " + configFilePath);
             }
 
-            if (args.Length > 2) {
-                filePath = args[2];
-            } else {
-                Console.WriteLine("No file path specified.  Using the default path " + filePath);
+            ReaderConfig config = ReadConfigFile(configFilePath);
+            if (config == null) {
+                Console.WriteLine("There was a problem reading the config file.");
+                return;
             }
 
-            ReaderConfig config = new ReaderConfig();
-            config.ClientId = "a473bade8af7472089437fa2c66f716d";
-            config.ClientSecret = "ihzfblbImOkRrRENNqb8yr3w5HbvXWWG";
-            config.DataDirectory = exeParent;
-            config.MmrFileDirectory = filePath;
-            config.MsPerRead = msPerRead;
-            config.RegionId = "US";
-            config.ProfileId = 1986271;
-            config.LadderId = 274006;
+            // Make the paths absolute with respect to the root of the EXE file if they are relative
+            if (!Path.IsPathRooted(config.MmrFilePath)) {
+                config.MmrFilePath = Path.Combine(new string[] { exeParent, config.MmrFilePath });
+            }
+
+            if (!Path.IsPathRooted(config.DataDirectory)) {
+                config.DataDirectory = Path.Combine(new string[] { exeParent, config.DataDirectory });
+            }
 
             MmrReader reader = new MmrReader(config);
             reader.Run();
