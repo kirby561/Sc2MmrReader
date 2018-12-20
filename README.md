@@ -1,7 +1,8 @@
+
 # Summary
 This is a simple tool that will periodically output the MMR of the given Starcraft 2 account to a file of your choosing.  
-I find it useful in combination with OBS to show your current MMR without having to manually enter it.  
-It requires a Blizzard API key which you can get for free but will need to create.  See the configuration instructions for details.  
+I find it useful in combination with OBS to show your current MMR without having to manually enter it.
+It requires a Blizzard API key which you can get for free but will need to create.  See the configuration instructions for details.
 
 # Configuration
 To get started, create a file called "Config.json" (or whatever you want) and copy the contents of "Config.json.example" into it.  
@@ -18,19 +19,20 @@ This is what the different settings are and how to set them:
 
 # Running
 To run the program, either double click on the exe or run this from command line:  
-	Sc2MmrReader \<ConfigFilePath\>  
+> Sc2MmrReader \<ConfigFilePath\>  
+
 where \<ConfigFilePath\> is a path to a JSON file with the settings you would like.  See "Config.json.example" for the format and which settings you need.  
 If you don't specify a config file, Sc2MmrReader will check for a file called "Config.json" in the same directory as the executable.  
 
 # Building from Source
 This project is written in C# targeting the .NET framework 4.6.1.  It has no dependencies outside of the standard libraries so you can just download Visual Studio Community to compile it:  
-	https://visualstudio.microsoft.com/downloads/
+> https://visualstudio.microsoft.com/downloads/
 
 To build it, just open Sc2MmrReader.sln and press Build.  
 
 # Reporting Issues
-Just write up any issues to the github issue tracker: https://github.com/kirby561/Sc2MmrReader/issues  
+Write up any issues to the github issue tracker: https://github.com/kirby561/Sc2MmrReader/issues  
 
 # Questions and help
 Ask any questions you have or discuss Sc2MmrReader in Discord!  
-https://discord.gg/CSJYR7s
+> https://discord.gg/CSJYR7s
