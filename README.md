@@ -27,3 +27,10 @@ This project is written in C# targeting the .NET framework 4.6.1.  It has no dep
 	https://visualstudio.microsoft.com/downloads/
 	
 To build it, just open Sc2MmrReader.sln and press Build.
+
+# Reporting Issues
+Just write up any issues to the github issue tracker: https://github.com/kirby561/Sc2MmrReader/issues
+
+# Questions and help
+Ask any questions you have or discuss Sc2MmrReader in Discord!
+https://discord.gg/CSJYR7s
