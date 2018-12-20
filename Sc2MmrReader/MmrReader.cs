@@ -8,7 +8,7 @@ using System.Web.Script.Serialization;
 
 namespace Sc2MmrReader {
     /// <summary>
-    /// Reads the MMR of kirby every "msPerRead" milliseconds into the file at the given path.
+    /// Reads the MMR of the given profile every "MsPerRead" milliseconds into the file at the given path.
     /// </summary>
     public class MmrReader {
         /// <summary>
@@ -89,7 +89,7 @@ namespace Sc2MmrReader {
             // Build the URL
             String url = "https://us.api.blizzard.com/sc2/profile/";
             url += _regionIdMap[_configuration.RegionId] + "/";
-            url += "1/"; // Realm ID - not sure what this is in SC2
+            url += _configuration.RealmId + "/";
             url += _configuration.ProfileId + "/";
             url += "ladder/";
             url += _configuration.LadderId;
@@ -106,6 +106,13 @@ namespace Sc2MmrReader {
                 Console.WriteLine("An exception was thrown polling the endpoint: " + ex.Message);
                 if (ex.InnerException != null) {
                     Console.WriteLine("\tInnerException: " + ex.InnerException.Message);
+                }
+
+                // Since we had an exception, try refreshing the Auth token as well.
+                try {
+                    File.Delete(_accessCacheFile);
+                } catch (Exception deleteEx) {
+                    Console.WriteLine("After a response error, could not delete the access cache file: " + deleteEx.Message);
                 }
             }
 
