@@ -26,6 +26,23 @@ namespace Sc2MmrReader {
         // Information about who is connecting:
         public String ClientId { get; set; }       // Get this by making a developer account for the Blizzard API.
         public String ClientSecret { get; set; }   // Same as above.
+
+        /// <summary>
+        /// Creates a ReaderConfig with default settings.
+        /// </summary>
+        /// <returns>Returns the created config.</returns>
+        public static ReaderConfig CreateDefault() {
+            // Fill out the default settings and version
+            ReaderConfig config = new ReaderConfig();
+            config.Version = ReaderConfigVersion;
+            config.MsPerRead = 5000;
+            config.DataDirectory = "";
+            config.MmrFilePath = "mmr.txt";
+
+            // The profile information and client info are left blank
+            //    because they must be filled out by the user.
+            return config;
+        }
     }
 
     // Keep track of old config versions in case we want to be

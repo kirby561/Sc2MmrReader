@@ -1,10 +1,8 @@
 {
-	"Version": 1,
 	"MsPerRead": 5000,
 	"DataDirectory": "",
 	"MmrFilePath": "mmr.txt",
 	"RegionId": "US",
-	"RealmId": 1,
 	"ProfileId": 1986271,
 	"LadderId": 274006,
 	"ClientId": "GetThisFromTheBlizzardDeveloperApiSite",
